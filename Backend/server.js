@@ -4,7 +4,7 @@ const express = require("express");
 const app = express();
 
 app.get("/api/notes", (req,res) => {
-    res.send("you got 7 notes");
+    res.send("you got 810 notes");
 });
 
 app.listen(5001, () =>{
