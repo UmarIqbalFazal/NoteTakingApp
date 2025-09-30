@@ -1,20 +1,28 @@
 import express from "express";
 import dotenv from "dotenv";
-import notesRoutes from "./routes/notesRoutes.js"
+import cors from "cors";
+
 import { connectDB } from "./config/db.js";
+import notesRoutes from "./routes/notesRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 dotenv.config();
 
-
 const app = express();
 
+// Connect to MongoDB
 connectDB();
 
-//middleware
-app.use(express.json());
+// Middleware
+app.use(cors());              // Allow frontend (React) to access backend
+app.use(express.json());      // Parse JSON request body
 
-app.use("/api/notes", notesRoutes);
+// Routes
+app.use("/api/auth", authRoutes);   // signup & login
+app.use("/api/notes", notesRoutes); // CRUD for notes
 
-app.listen(5001, () =>{
-    console.log("Server started on PORT: 5001");
+// Start server
+const PORT = process.env.PORT || 5001;
+app.listen(PORT, () => {
+  console.log(`✅ Server running on http://localhost:${PORT}`);
 });
