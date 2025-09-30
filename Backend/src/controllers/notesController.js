@@ -1,61 +1,82 @@
-import Note from "../Models/Note.js"
+import Note from "../models/Note.js";
 
-export async function getAllNotes(_, res) {
-    try {
-        const notes = await Note.find().sort({createdAt: -1}); // -1 will show in desc order, newest first.
-        res.status(200).json(notes)
-    } catch (error) {
-        console.error("Error in getAllNotes controller", error);
-        res.status(500).json({message:"Internal server error"});
-    }
+// GET all notes (only for logged-in user, with optional search)
+export async function getAllNotes(req, res) {
+  try {
+    const query = req.query.q || ""; // search text
+    const userId = req.user.id;
+
+    const notes = await Note.find({
+      userId, // only fetch this user's notes
+      $or: [
+        { title: { $regex: query, $options: "i" } },
+        { content: { $regex: query, $options: "i" } },
+        { tags: { $regex: query, $options: "i" } }
+      ],
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json(notes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
-export async function createNote(req,res) {
-    try {
-        const {title,content} = req.body
-        const note = new Note({title,content})
+// CREATE a new note
+export async function createNote(req, res) {
+  try {
+    const { title, content, tags } = req.body;
+    const userId = req.user.id;
 
-        const savedNote = await note.save()
-        res.status(201).json(savedNote);
-    } catch (error) {
-        console.error("Error in createNote controller", error);
-        res.status(500).json({message:"Internal server error"});
-    }
-};
+    const note = new Note({
+      title,
+      content,
+      tags,
+      userId,
+    });
 
-export async function getNoteById(req,res) {
-    try {
-        const note = await Note.findById(req.params.id)
-        if(!note) return res.status(404).json({message:"Note not found"})
-        res.json(note);
-    } catch (error) {
-        console.error("Error in getNoteById controller", error);
-        res.status(500).json({message:"Internal server error"});
-    }
-
-};
-
-export async function updateNote (req,res) {
-    try {
-      const {title,content} =req.body
-      const updatedNote = await Note.findByIdAndUpdate(req.params.id,{title,content},{new:true,});
-      if(!updatedNote) return res.status(404).json({message:"Note not found"});
-
-
-      res.status(200).json(updatedNote);
-    } catch (error) {
-        console.error("Error in updateNote controller", error);
-        res.status(500).json({message:"Internal server error"});
-    }
+    const savedNote = await note.save();
+    res.status(201).json(savedNote);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
 
-export async function deleteNote(req,res) {
-    try {
-    const deletedNote =  await Note.findByIdAndDelete(req.params.id)
-    if(!deletedNote) return res.status(404).json({message:"Note not found"});
-    res.status(200).json({message:"Note deleted successfully"})
-    } catch (error) {
-        console.error("Error in deleteNote controller", error);
-        res.status(500).json({message:"Internal server error"});        
+// UPDATE a note
+export async function updateNote(req, res) {
+  try {
+    const { id } = req.params;
+    const { title, content, tags } = req.body;
+    const userId = req.user.id;
+
+    const note = await Note.findOneAndUpdate(
+      { _id: id, userId }, // only allow if user owns the note
+      { title, content, tags },
+      { new: true }
+    );
+
+    if (!note) {
+      return res.status(404).json({ error: "Note not found or not authorized" });
     }
+
+    res.json(note);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+// DELETE a note
+export async function deleteNote(req, res) {
+  try {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    const note = await Note.findOneAndDelete({ _id: id, userId });
+    if (!note) {
+      return res.status(404).json({ error: "Note not found or not authorized" });
+    }
+
+    res.json({ message: "Note deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 }
