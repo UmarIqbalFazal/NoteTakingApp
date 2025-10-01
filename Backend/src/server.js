@@ -24,5 +24,5 @@ app.use("/api/notes", notesRoutes); // CRUD for notes
 // Start server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`✅ Server running on http://localhost:${PORT}`);
+  console.log(`Server successfully running on http://localhost:${PORT}`);
 });

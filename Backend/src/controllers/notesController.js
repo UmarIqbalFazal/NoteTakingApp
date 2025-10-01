@@ -3,21 +3,25 @@ import Note from "../models/Note.js";
 // GET all notes (only for logged-in user, with optional search)
 export async function getAllNotes(req, res) {
   try {
-    const query = req.query.q || ""; // search text
+    const { q } = req.query; // optional search term
     const userId = req.user.id;
 
-    const notes = await Note.find({
-      userId, // only fetch this user's notes
-      $or: [
-        { title: { $regex: query, $options: "i" } },
-        { content: { $regex: query, $options: "i" } },
-        { tags: { $regex: query, $options: "i" } }
-      ],
-    }).sort({ createdAt: -1 });
+    // base filter: only this user's notes
+    const filter = { userId };
 
+    // if search query exists, add OR condition
+    if (q && q.trim() !== "") {
+      filter.$or = [
+        { title: { $regex: q, $options: "i" } },
+        { content: { $regex: q, $options: "i" } },
+        { tags: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    const notes = await Note.find(filter).sort({ createdAt: -1 });
     res.status(200).json(notes);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Failed to fetch notes" });
   }
 }
 
@@ -27,17 +31,21 @@ export async function createNote(req, res) {
     const { title, content, tags } = req.body;
     const userId = req.user.id;
 
+    if (!title || !content) {
+      return res.status(400).json({ error: "Title and content are required" });
+    }
+
     const note = new Note({
       title,
       content,
-      tags,
+      tags: tags || [],
       userId,
     });
 
     const savedNote = await note.save();
     res.status(201).json(savedNote);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Failed to create note" });
   }
 }
 
@@ -60,7 +68,7 @@ export async function updateNote(req, res) {
 
     res.json(note);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Failed to update note" });
   }
 }
 
@@ -77,6 +85,6 @@ export async function deleteNote(req, res) {
 
     res.json({ message: "Note deleted successfully" });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: "Failed to delete note" });
   }
 }
