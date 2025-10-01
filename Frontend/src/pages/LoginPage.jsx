@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import api from "../lib/axios";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -14,10 +14,10 @@ function LoginPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post("http://localhost:5001/api/auth/login", form);
-      localStorage.setItem("token", res.data.token); // save JWT
+      const res = await api.post("/auth/login", form);
+      localStorage.setItem("token", res.data.token); // ✅ save token
       toast.success("Login successful!");
-      navigate("/"); // redirect to home
+      navigate("/"); // ✅ go to homepage
     } catch (err) {
       toast.error(err.response?.data?.error || "Login failed");
     }
@@ -51,7 +51,7 @@ function LoginPage() {
           </button>
         </form>
         <p className="mt-4 text-center text-sm">
-          Don’t have an account?{" "}
+          Don't have an account?{" "}
           <Link to="/register" className="link link-primary">
             Register
           </Link>

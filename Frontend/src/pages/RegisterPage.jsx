@@ -1,7 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
+import api from "../lib/axios";
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -14,9 +14,13 @@ function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5001/api/auth/signup", form);
-      toast.success("Account created! Please log in.");
-      navigate("/login");
+      const res = await api.post("/auth/signup", form);
+
+      // ✅ Save token so user is logged in immediately
+      localStorage.setItem("token", res.data.token);
+
+      toast.success("Account created successfully!");
+      navigate("/"); // redirect to home
     } catch (err) {
       toast.error(err.response?.data?.error || "Registration failed");
     }

@@ -12,12 +12,10 @@ const HomePage = () => {
   useEffect(() => {
     const fetchNotes = async () => {
       try {
-        const res = await api.get("/notes");
-        console.log(res.data);
+        const res = await api.get("/notes"); // ✅ token automatically attached
         setNotes(res.data);
       } catch (error) {
-        console.log("Error fetching notes");
-        console.log(error.response);
+        console.log("Error fetching notes", error.response);
         toast.error("Failed to load notes");
       } finally {
         setLoading(false);
