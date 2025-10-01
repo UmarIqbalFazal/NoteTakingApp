@@ -1,9 +1,9 @@
 import Note from "../models/Note.js";
 
-// GET all notes (only for logged-in user, with optional search)
+// GET all notes (only for logged-in user, with  search)
 export async function getAllNotes(req, res) {
   try {
-    const { q } = req.query; // optional search term
+    const { q } = req.query; //  search term
     const userId = req.user.id;
 
     // base filter: only this user's notes
