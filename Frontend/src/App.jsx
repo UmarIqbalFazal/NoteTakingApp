@@ -9,12 +9,10 @@ import RegisterPage from "./pages/RegisterPage";
 
 const App = () => {
   return (
-    <div data-theme="forest">
+    <div className="relative h-full w-full">
+      <div className="absolute inset-0 -z-10 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,#000_60%,#00FF9D40_100%)]" />
       {/* Global Toaster for notifications */}
       <Toaster position="top-right" reverseOrder={false} />
-
-      {/* Example button (can remove later) */}
-      <button className="btn btn-outline">Click me</button>
 
       <Routes>
         <Route path="/" element={<HomePage />} />

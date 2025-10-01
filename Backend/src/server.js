@@ -14,7 +14,13 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(cors());              // Allow frontend (React) to access backend
+if (process.env.NODE_ENV !== "production") {
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+    })
+  );
+}             // Allow frontend (React) to access backend
 app.use(express.json());      // Parse JSON request body
 
 // Routes
