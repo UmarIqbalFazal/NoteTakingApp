@@ -11,8 +11,7 @@ import EditNotePage from "./pages/EditNotePage";
 const App = () => {
   return (
     <div className="relative h-full w-full">
-      <div className="absolute inset-0 -z-10 h-full w-full items-center px-5 py-24 
-  [background:radial-gradient(125%_125%_at_50%_10%,hsl(var(--b1))_60%,hsl(var(--a))_100%)]" />
+      <div className="absolute inset-0 -z-10 h-full w-full items-center px-5 py-24 [background:radial-gradient(125%_125%_at_50%_10%,hsl(var(--b1))_60%,hsl(var(--a))_100%)]" />
 
       {/* Global Toaster for notifications */}
       <Toaster position="top-right" reverseOrder={false} />
