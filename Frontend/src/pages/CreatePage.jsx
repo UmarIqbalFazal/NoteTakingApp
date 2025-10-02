@@ -7,6 +7,7 @@ import api from "../lib/axios";
 const CreatePage = () => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [tags, setTags] = useState(""); // new state for tags (comma-separated)
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
@@ -19,9 +20,15 @@ const CreatePage = () => {
       return;
     }
 
+    // convert tags string → array
+    const tagsArray = tags
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag.length > 0);
+
     setLoading(true);
     try {
-      await api.post("/notes", { title, content }); // ✅ token auto-attached
+      await api.post("/notes", { title, content, tags: tagsArray }); // include tags
       toast.success("Note created successfully!");
       navigate("/");
     } catch (error) {
@@ -75,6 +82,23 @@ const CreatePage = () => {
                     value={content}
                     onChange={(e) => setContent(e.target.value)}
                   />
+                </div>
+
+                {/* Tags Input */}
+                <div className="form-control mb-4">
+                  <label className="label">
+                    <span className="label-text">Tags</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. work, personal, urgent"
+                    className="input input-bordered"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Separate tags with commas
+                  </p>
                 </div>
 
                 <div className="card-actions justify-end">
