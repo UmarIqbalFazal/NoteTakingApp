@@ -3,9 +3,10 @@ import { Toaster } from "react-hot-toast";
 
 import HomePage from "./pages/HomePage";
 import CreatePage from "./pages/CreatePage";
-import NoteDetailPage from "./pages/NoteDetailPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import EditNotePage from "./pages/EditNotePage";
+
 
 const App = () => {
   return (
@@ -17,9 +18,9 @@ const App = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/create" element={<CreatePage />} />
-        <Route path="/note/:id" element={<NoteDetailPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/notes/:id/edit" element={<EditNotePage />} />
       </Routes>
     </div>
   );
